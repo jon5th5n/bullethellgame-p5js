@@ -7,10 +7,10 @@ class Player {
     }
 
     display() {
-        fill(20, 120, 200)
-        stroke(20, 120, 200)
+        screen.fill(20, 120, 200)
+        screen.stroke(20, 120, 200)
 
-        ellipse(this.x, this.y, this.size)
+        screen.ellipse(this.x, this.y, this.size)
     }
 
     move() {
@@ -22,6 +22,6 @@ class Player {
         }
 
         if(this.x - this.size/2 < 0) this.x = this.size/2;
-        if(this.x + this.size/2 > width) this.x = width - this.size/2;
+        if(this.x + this.size/2 > screen.width) this.x = screen.width - this.size/2;
     }
 }

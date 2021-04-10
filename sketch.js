@@ -1,31 +1,62 @@
-let player;
+// == todot ===> make it one size for every screen
 
-let bulletCount = 70;
-let bullets = []
 
-let state = 'Ingame';
+let screen;
+
+let font;
+
 let keys = [];
 
-let score = 0;
+let state;
+let score;
+
+let player;
+
+let bulletCount = 40; // per 1000px width
+let bullets = [];
+
+function preload() {
+  font = loadFont('Assets/Fonts/8BitMadness.ttf');
+}
 
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  pixelDensity(1);
+  noSmooth();
+
+  if(windowWidth < windowHeight) state = 'SwitchToLandscape';
+  else {
+    let sWidth = 1920;
+    let sHeight = int(sWidth * (height / width));
+    screen = createGraphics(sWidth, sHeight);
+  }
 
   restart();
 }
 
 function draw() {
-  background(50);
+  screen.background(50);
 
-  update();
+  switch(state) {
+    case 'Ingame':
+      gameScreen();
+      break;
+    case 'SwitchToLandscape':
+      textFont(font, adjustSize(150));
+      textAlign(CENTER, CENTER);
+      text(`SWITCH TO LANDSCAPE MODE`, width/2, height/2);
+      break;
+  }
+
+  image(screen, 0, 0, width, height)
 }
 
 
-//== functions ==================================
+// == states ====================================
 
 
-function update() {
+function gameScreen() {
   player.move();
   player.display();
 
@@ -34,7 +65,15 @@ function update() {
   }
 
   collision();
+
+  screen.textFont(font, 50);
+  screen.textAlign(LEFT, TOP);
+  screen.text(`score: ${score}`, 10, 10);
 }
+
+
+//== functions ==================================
+
 
 function collision() {
   for(let i = 0; i < bullets.length; i++) {
@@ -44,19 +83,30 @@ function collision() {
 }
 
 function restart() {
-  player = new Player(width/2, height-100, 40, 7)
+  state = 'Ingame';
+  score = 0;
+
+  player = new Player(screen.width/2, screen.height-100, 40, 7)
 
   declareBulltes();
 }
 
 function declareBulltes() {
-  for(let i = 0; i < bulletCount; i++) {
+  for(let i = 0; i < ((bulletCount / 1000) * screen.width); i++) {
     bullets[i] = new Bullet(random(100));
   }
 }
 
 
-// register pressed keys ========================
+// == helper functions ==========================
+
+
+function adjustSize(size) {
+  return (size / 1920) * width;
+}
+
+
+// == register pressed keys =====================
 
 
 function keyPressed() {
