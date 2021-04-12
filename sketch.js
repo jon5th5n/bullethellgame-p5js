@@ -7,7 +7,7 @@ let font;
 
 let keys = [];
 
-let state;
+let state = 'Ingame';
 let score;
 
 let player;
@@ -26,21 +26,22 @@ function setup() {
   noSmooth();
 
   if(windowWidth < windowHeight) state = 'SwitchToLandscape';
-  else {
-    let sWidth = 1920;
-    let sHeight = int(sWidth * (height / width));
-    screen = createGraphics(sWidth, sHeight);
-  }
+
+  let sWidth = 1920;
+  let sHeight = int(sWidth * (height / width));
+  screen = createGraphics(sWidth, sHeight);
 
   restart();
 }
 
 function draw() {
+  background(50);
   screen.background(50);
 
   switch(state) {
     case 'Ingame':
       gameScreen();
+      image(screen, 0, 0, width, height)
       break;
     case 'SwitchToLandscape':
       textFont(font, adjustSize(150));
@@ -48,8 +49,6 @@ function draw() {
       text(`SWITCH TO LANDSCAPE MODE`, width/2, height/2);
       break;
   }
-
-  image(screen, 0, 0, width, height)
 }
 
 
@@ -83,7 +82,6 @@ function collision() {
 }
 
 function restart() {
-  state = 'Ingame';
   score = 0;
 
   player = new Player(screen.width/2, screen.height-100, 40, 7)
