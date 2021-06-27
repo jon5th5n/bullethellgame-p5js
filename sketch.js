@@ -3,11 +3,11 @@
 
 let screen;
 
-let font;
+let font8Bit;
 
 let keys = [];
 
-let state = 'Ingame';
+let state = 'HomeScreen';
 let score;
 
 let player;
@@ -16,7 +16,7 @@ let bulletCount = 40; // per 1000px width
 let bullets = [];
 
 function preload() {
-  font = loadFont('Assets/Fonts/8BitMadness.ttf');
+  font8Bit = loadFont('Assets/Fonts/8BitMadness.ttf');
 }
 
 
@@ -30,8 +30,6 @@ function setup() {
   let sWidth = 1920;
   let sHeight = int(sWidth * (height / width));
   screen = createGraphics(sWidth, sHeight);
-
-  restart();
 }
 
 function draw() {
@@ -43,8 +41,14 @@ function draw() {
       gameScreen();
       image(screen, 0, 0, width, height)
       break;
+    case 'GameOver':
+      gameOverScreen();
+      break;
+    case 'HomeScreen':
+      homeScreen();
+      break;
     case 'SwitchToLandscape':
-      textFont(font, adjustSize(150));
+      textFont(font8Bit, adjustSize(150));
       textAlign(CENTER, CENTER);
       text(`SWITCH TO LANDSCAPE MODE`, width/2, height/2);
       break;
@@ -65,9 +69,21 @@ function gameScreen() {
 
   collision();
 
-  screen.textFont(font, 50);
+  screen.textFont(font8Bit, 50);
   screen.textAlign(LEFT, TOP);
   screen.text(`score: ${score}`, 10, 10);
+}
+
+function gameOverScreen() {
+  button(width/2, height/2 - 75, 700, 100, (pressed, touching) => { if(pressed) restart() }, 'RECT', true, color(0, 0, 255), 3, color(0, 0, 0), 'RESTART', font8Bit, color(255, 255, 255));
+  button(width/2, height/2 + 75, 400, 100, (pressed, touching) => { if(pressed) state = 'HomeScreen' }, 'RECT', true, color(0, 0, 255), 3, color(0, 0, 0), 'BACK', font8Bit, color(255, 255, 255));
+
+  textSize(80);
+  text(`score: ${score}`, width/2, height/2 - 300)
+}
+
+function homeScreen() {
+  button(width/2, height/2 - 50, 800, 200, (pressed, touching) => { if(pressed) restart() }, 'RECT', true, color(0, 0, 255), 3, color(0, 0, 0), 'PLAY', font8Bit, color(66, 179, 245), 1, color(0, 0, 0));
 }
 
 
@@ -77,16 +93,20 @@ function gameScreen() {
 function collision() {
   for(let i = 0; i < bullets.length; i++) {
     let d = dist(player.x, player.y, bullets[i].x, bullets[i].y);
-    if(d < player.size/2 + bullets[i].size/2) restart();
+    if(d < player.size/2 + bullets[i].size/2) {
+      state = 'GameOver';
+    }
   }
 }
 
 function restart() {
   score = 0;
 
-  player = new Player(screen.width/2, screen.height-100, 40, 7)
+  player = new Player(screen.width/2, screen.height-100, 40, 7);
 
   declareBulltes();
+
+  state = 'Ingame'
 }
 
 function declareBulltes() {

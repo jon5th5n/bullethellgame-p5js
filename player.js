@@ -21,6 +21,11 @@ class Player {
             this.x += this.speed;
         }
 
+        if(mouseIsPressed) {
+            if(map(mouseX, 0, width, 0, screen.width) < screen.width/2) this.x -= this.speed;
+            else this.x += this.speed;
+        }
+
         if(this.x - this.size/2 < 0) this.x = this.size/2;
         if(this.x + this.size/2 > screen.width) this.x = screen.width - this.size/2;
     }
