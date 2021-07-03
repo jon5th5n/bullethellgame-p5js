@@ -1,4 +1,5 @@
-// == todot ===> make it one size for every screen
+const socket = io('http://192.168.178.69:5000')
+
 
 
 let screen;
@@ -18,6 +19,9 @@ let bullets = [];
 function preload() {
   font8Bit = loadFont('Assets/Fonts/8BitMadness.ttf');
 }
+
+let nameInput;
+let scoreSubmitButton;
 
 
 function setup() {
@@ -75,8 +79,8 @@ function gameScreen() {
 }
 
 function gameOverScreen() {
-  button(width/2, height/2 - 75, 700, 100, (pressed, touching) => { if(pressed) restart() }, 'RECT', true, color(0, 0, 255), 3, color(0, 0, 0), 'RESTART', font8Bit, color(255, 255, 255));
-  button(width/2, height/2 + 75, 400, 100, (pressed, touching) => { if(pressed) state = 'HomeScreen' }, 'RECT', true, color(0, 0, 255), 3, color(0, 0, 0), 'BACK', font8Bit, color(255, 255, 255));
+  button(width/2, height/2 - 75, 700, 100, (pressed, touching) => { if(pressed) { restart(); nameInput.remove(); scoreSubmitButton.remove() } }, 'RECT', true, color(0, 0, 255), 3, color(0, 0, 0), 'RESTART', font8Bit, color(255, 255, 255));
+  button(width/2, height/2 + 75, 400, 100, (pressed, touching) => { if(pressed) { state = 'HomeScreen'; nameInput.remove(); scoreSubmitButton.remove() } }, 'RECT', true, color(0, 0, 255), 3, color(0, 0, 0), 'BACK', font8Bit, color(255, 255, 255));
 
   textSize(80);
   text(`score: ${score}`, width/2, height/2 - 300)
@@ -95,6 +99,14 @@ function collision() {
     let d = dist(player.x, player.y, bullets[i].x, bullets[i].y);
     if(d < player.size/2 + bullets[i].size/2) {
       state = 'GameOver';
+
+      nameInput = createInput('').position(width/2 - 50, height/2 + 200).size(100);
+      scoreSubmitButton = createButton('submit score').position(width/2 - 50, height/2 + 250).size(100).mousePressed(() => {
+        if(!nameInput.value()) return print('you need to choose a name');
+
+        socket.emit('submit score', nameInput.value(), score, (submittedName, submittedScore) => { print(`succesfully submitted ${submittedScore} points with the name ${submittedName}`) });
+        scoreSubmitButton.hide();
+      });
     }
   }
 }
