@@ -7,6 +7,7 @@ function button(x, y, w, h, callback, shapeMode = 'RECT', backgroundTransparent 
         //-- check interaction -----
         let touching = ((mouseX > x - w/2) && (mouseX < x + w/2) && (mouseY > y - h/2) && (mouseY < y + h/2));
         let pressed = (touching && mouseIsPressed);
+        let clicked = (touching && mouseIsClicked);
 
         //-- render -----
         if(!backgroundTransparent) {
@@ -33,7 +34,7 @@ function button(x, y, w, h, callback, shapeMode = 'RECT', backgroundTransparent 
         }
 
         //-- send callback -----
-        callback(pressed, touching);
+        callback(pressed, touching, clicked);
     }
     else console.error('this shape mode does not exist');
 }
